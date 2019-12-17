@@ -469,14 +469,21 @@ $(function() {
 
     // glueType change
     $(".glueType").change(function(){
-		// executorHandler
+        // executorHandler
         var $executorHandler = $(this).parents("form").find("input[name='executorHandler']");
+        var $dubboDiv = $(this).parents("form").find("div[name='dubboDiv']");
         var glueType = $(this).val();
-        if ('BEAN' != glueType) {
+        if ('BEAN' != glueType && 'DUBBO' != glueType) {
             $executorHandler.val("");
             $executorHandler.attr("readonly","readonly");
+            $dubboDiv.hide();
         } else {
             $executorHandler.removeAttr("readonly");
+            if('BEAN' == glueType){
+                $dubboDiv.hide();
+            }else{
+                $dubboDiv.show();
+            }
         }
     });
 
@@ -522,11 +529,16 @@ $(function() {
 		$('#updateModal .form select[name=executorBlockStrategy] option[value='+ row.executorBlockStrategy +']').prop('selected', true);
 		$('#updateModal .form select[name=glueType] option[value='+ row.glueType +']').prop('selected', true);
 
+        // add dubbo
+        $("#updateModal .form input[name='executorDubboMethod']").val( row.executorDubboMethod );
+        $("#updateModal .form input[name='executorDubboVersion']").val(row.executorDubboVersion);
+
         $("#updateModal .form select[name=glueType]").change();
 
         // init-cronGen
         $("#updateModal .form input[name='jobCron']").show().siblings().remove();
         $("#updateModal .form input[name='jobCron']").cronGen({});
+
 
 		// show
 		$('#updateModal').modal({backdrop: false, keyboard: false}).modal('show');

@@ -4,7 +4,9 @@ import com.xxl.job.core.biz.AdminBiz;
 import com.xxl.job.core.biz.ExecutorBiz;
 import com.xxl.job.core.biz.client.AdminBizClient;
 import com.xxl.job.core.biz.impl.ExecutorBizImpl;
+import com.xxl.job.core.biz.model.TriggerParam;
 import com.xxl.job.core.handler.IJobHandler;
+import com.xxl.job.core.handler.impl.DubboJobHandler;
 import com.xxl.job.core.log.XxlJobFileAppender;
 import com.xxl.job.core.thread.ExecutorRegistryThread;
 import com.xxl.job.core.thread.JobLogFileCleanThread;
@@ -20,6 +22,7 @@ import com.xxl.rpc.util.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -27,8 +30,9 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Created by xuxueli on 2016/3/2 21:14.
  */
-public class XxlJobExecutor  {
+public class XxlJobExecutor implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobExecutor.class);
+    private static final long serialVersionUID = 1983737739240927258L;
 
     // ---------------------- param ----------------------
     private String adminAddresses;
@@ -104,6 +108,20 @@ public class XxlJobExecutor  {
         TriggerCallbackThread.getInstance().toStop();
 
     }
+
+    // -------------------- add dubbo ------------------------------------
+
+    public static IJobHandler loadDubboJobHandler( String address, TriggerParam triggerParam ) {
+        String cacheKey = triggerParam.getExecutorHandler() + "." + triggerParam.getExecutorDubboMethod() + "." + triggerParam.getExecutorDubboVersion();
+        if ( jobHandlerRepository.containsKey( cacheKey ) )
+        {
+            return(jobHandlerRepository.get( cacheKey ) );
+        }
+        IJobHandler jobHandler = new DubboJobHandler( address, triggerParam );
+        jobHandlerRepository.put( cacheKey, jobHandler );
+        return(jobHandler);
+    }
+
 
 
     // ---------------------- admin-client (rpc invoker) ----------------------

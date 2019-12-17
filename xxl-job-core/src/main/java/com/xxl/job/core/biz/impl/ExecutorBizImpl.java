@@ -24,6 +24,16 @@ import java.util.Date;
 public class ExecutorBizImpl implements ExecutorBiz {
     private static Logger logger = LoggerFactory.getLogger(ExecutorBizImpl.class);
 
+    /* dubbo nacos address , example=nacos://127.0.0.1:8848 */
+    private String address = "";
+
+    public ExecutorBizImpl() {
+    }
+
+    public ExecutorBizImpl(String address) {
+        this.address = address;
+    }
+
     @Override
     public ReturnT<String> beat() {
         return ReturnT.SUCCESS;
@@ -75,7 +85,14 @@ public class ExecutorBizImpl implements ExecutorBiz {
 
         // valid：jobHandler + jobThread
         GlueTypeEnum glueTypeEnum = GlueTypeEnum.match(triggerParam.getGlueType());
-        if (GlueTypeEnum.BEAN == glueTypeEnum) {
+
+        // add dubbo
+        if (GlueTypeEnum.DUBBO == glueTypeEnum) {
+            jobHandler = XxlJobExecutor.loadDubboJobHandler(address, triggerParam);
+            if (logger.isDebugEnabled()) {
+                logger.debug("# jobHandler.hashCode()={}", jobHandler.hashCode());
+            }
+        }else if (GlueTypeEnum.BEAN == glueTypeEnum) {
 
             // new jobhandler
             IJobHandler newJobHandler = XxlJobExecutor.loadJobHandler(triggerParam.getExecutorHandler());

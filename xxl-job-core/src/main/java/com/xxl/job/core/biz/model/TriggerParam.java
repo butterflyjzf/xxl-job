@@ -25,6 +25,9 @@ public class TriggerParam implements Serializable{
     private int broadcastIndex;
     private int broadcastTotal;
 
+    private String executorDubboMethod;
+    private String executorDubboVersion;
+
 
     public int getJobId() {
         return jobId;
@@ -122,6 +125,21 @@ public class TriggerParam implements Serializable{
         this.broadcastTotal = broadcastTotal;
     }
 
+    public String getExecutorDubboMethod() {
+        return executorDubboMethod;
+    }
+
+    public void setExecutorDubboMethod(String executorDubboMethod) {
+        this.executorDubboMethod = executorDubboMethod;
+    }
+
+    public String getExecutorDubboVersion() {
+        return executorDubboVersion;
+    }
+
+    public void setExecutorDubboVersion(String executorDubboVersion) {
+        this.executorDubboVersion = executorDubboVersion;
+    }
 
     @Override
     public String toString() {
@@ -138,6 +156,8 @@ public class TriggerParam implements Serializable{
                 ", glueUpdatetime=" + glueUpdatetime +
                 ", broadcastIndex=" + broadcastIndex +
                 ", broadcastTotal=" + broadcastTotal +
+                ", executorDubboMethod=" + executorDubboMethod +
+                ", executorDubboVersion=" + executorDubboVersion +
                 '}';
     }
 

@@ -1,5 +1,6 @@
 package com.xxl.job.admin.controller;
 
+import com.xxl.job.admin.core.conf.XxlJobAdminConfig;
 import com.xxl.job.admin.core.scheduler.XxlJobScheduler;
 import com.xxl.job.admin.core.exception.XxlJobException;
 import com.xxl.job.admin.core.model.XxlJobGroup;
@@ -136,7 +137,14 @@ public class JobLogController {
 	@ResponseBody
 	public ReturnT<LogResult> logDetailCat(String executorAddress, long triggerTime, long logId, int fromLineNum){
 		try {
-			ExecutorBiz executorBiz = XxlJobScheduler.getExecutorBiz(executorAddress);
+			ExecutorBiz executorBiz = null;
+
+			if(executorAddress.startsWith("nacos")){
+				executorBiz = XxlJobScheduler.getDubboEecutorBiz(executorAddress);
+			}else{
+				executorBiz = XxlJobScheduler.getExecutorBiz(executorAddress);
+			}
+
 			ReturnT<LogResult> logResult = executorBiz.log(triggerTime, logId, fromLineNum);
 
 			// is end
@@ -170,7 +178,15 @@ public class JobLogController {
 		// request of kill
 		ReturnT<String> runResult = null;
 		try {
-			ExecutorBiz executorBiz = XxlJobScheduler.getExecutorBiz(log.getExecutorAddress());
+
+			String executorAddress = log.getExecutorAddress();
+			ExecutorBiz executorBiz = null;
+			if(executorAddress.startsWith("nacos")){
+				executorBiz = XxlJobScheduler.getDubboEecutorBiz(executorAddress);
+			}else{
+				executorBiz = XxlJobScheduler.getExecutorBiz(executorAddress);
+			}
+
 			runResult = executorBiz.kill(jobInfo.getId());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

@@ -4,6 +4,7 @@ import com.xxl.job.admin.core.conf.XxlJobAdminConfig;
 import com.xxl.job.admin.core.thread.*;
 import com.xxl.job.admin.core.util.I18nUtil;
 import com.xxl.job.core.biz.ExecutorBiz;
+import com.xxl.job.core.biz.impl.ExecutorBizImpl;
 import com.xxl.job.core.enums.ExecutorBlockStrategyEnum;
 import com.xxl.rpc.remoting.invoker.call.CallType;
 import com.xxl.rpc.remoting.invoker.reference.XxlRpcReferenceBean;
@@ -106,6 +107,34 @@ public class XxlJobScheduler  {
         executorBiz = (ExecutorBiz) referenceBean.getObject();
 
         executorBizRepository.put(address, executorBiz);
+        return executorBiz;
+    }
+
+    /**
+     * 创建dubbo执行器
+     *
+     * @param address
+     * @return ExecutorBiz
+     * @throws Exception
+     */
+    public static ExecutorBiz getDubboEecutorBiz(String address) throws Exception {
+        // valid
+        if (address == null || address.trim().length() == 0) {
+            return null;
+        }
+        // load-cache
+        address = address.trim();
+        // String key = "zk.address." + address;
+        String key = "nacos.address." + address; // TODO
+        ExecutorBiz executorBiz = executorBizRepository.get(key);
+        if (executorBiz != null) {
+            return executorBiz;
+        }
+        executorBiz = new ExecutorBizImpl(address);
+        if (logger.isDebugEnabled()) {
+            logger.debug("# key={},  address={}", key, address);
+        }
+        executorBizRepository.put(key, executorBiz);
         return executorBiz;
     }
 

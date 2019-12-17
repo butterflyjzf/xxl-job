@@ -224,6 +224,10 @@ public class XxlJobServiceImpl implements XxlJobService {
 		exists_jobInfo.setChildJobId(jobInfo.getChildJobId());
 		exists_jobInfo.setTriggerNextTime(nextTriggerTime);
 
+		// add dubbo
+		exists_jobInfo.setExecutorDubboMethod(jobInfo.getExecutorDubboMethod());
+		exists_jobInfo.setExecutorDubboVersion(jobInfo.getExecutorDubboVersion());
+
 		exists_jobInfo.setUpdateTime(new Date());
         xxlJobInfoDao.update(exists_jobInfo);
 
